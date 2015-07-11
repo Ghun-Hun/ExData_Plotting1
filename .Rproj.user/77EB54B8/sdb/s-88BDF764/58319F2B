@@ -1,0 +1,17 @@
+{
+    "contents" : "require(data.table)\nSys.setlocale(category = \"LC_ALL\", locale = \"C\")\n# extract header by nrow=0.\ndownload.file(\"https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip\",\"household_power_consumption.zip\",method=\"curl\")\ncommand<-paste0('unzip -p ',getwd(),\"/\",\"household_power_consumption.zip\")\ncolheader<-fread(command,sep=\";\",header=TRUE,nrows=0)\ncolheader<-colnames(colheader)\n\n# get data from 1/2/2007 to file end by fread function. \nhousetxt<-fread(command,sep=\";\",header=FALSE,na.strings='?',skip=\"1/2/2007\")\nnames(housetxt)<-colheader\n\n# extract data from 1/2/2007 to 2/2/2007 for Date column \n housetxt<-housetxt[Date==\"1/2/2007\" | Date==\"2/2/2007\"]\n# remove NA\nhousetxt<-na.omit(housetxt)\n#In addition to the Date and Time columns, all of the columns converted to a numeric type.\nhousetxt_narm<-housetxt[,3:9,with=FALSE]\nhousetxt_partial<-housetxt_narm[,lapply(.SD,as.numeric)]\n# The date and time  columns converted POSIXlt type.\ndate<-as.POSIXct(as.POSIXlt(paste(housetxt[,Date],housetxt[,Time]),format=\"%d/%m/%Y %H:%M:%S\"))\n#combind date and converted numeric data.\nhouse<-cbind(date,housetxt_partial)\n\n#create png device.\npng(filename = \"plot4.png\",width = 480, height = 480, units = \"px\")\n#draw plot.\npar(mfcol = c(2, 2)) \nwith(house, {\n  #first plot\n    plot(date,Global_active_power,ylab=\"Global Active Power\",xlab=\" \",type=\"l\",axes=FALSE,frame.plot=TRUE)  \n    axis.POSIXct(1,seq(min(date),max(date),\"days\"),format=\"%a\")\n    axis(2,at=seq(0,6,2))\n  #second plot\n    plot(date,Sub_metering_1,ylab=\"Energy sub metering\",type=\"n\",xlab=\" \",axes=FALSE,frame.plot=TRUE)\n    #Add line for for Sub_metering_1 ,2 ,and 3 column.\n    lines(date,house$Sub_metering_1,col=\"black\")\n    lines(date,house$Sub_metering_2,col=\"red\")\n    lines(date,house$Sub_metering_3,col=\"blue\") \n    #Add x and y axis.\n    axis.POSIXct(1,seq(min(date),max(date),\"days\"),format=\"%a\")\n    axis(2,at=seq(0,30,10))\n    #Add legend\n    legend(\"topright\",c(\"Sub_metering_1\",\"Sub_metering_2\",\"Sub_metering_3\"),bty=\"n\",lty=c(1,1,1),col=c(\"black\",\"red\",\"blue\"))\n  #third plot\n    plot(date,Voltage,ylab=\"Voltage\",xlab=\"datetime\",type=\"l\",axes=FALSE,frame.plot=TRUE)  \n    axis.POSIXct(1,seq(min(date),max(date),\"days\"),format=\"%a\")\n    axis(2,at=seq(234,246,2))\n  #fourth plot\n   plot(date,Global_reactive_power,ylab=\"Global_reactive_power\",xlab=\"datetime\",type=\"l\",axes=FALSE,frame.plot=TRUE)  \n   axis.POSIXct(1,seq(min(date),max(date),\"days\"),format=\"%a\")\n   axis(2,at=seq(0.1,0.5,0.1))\n  })\n#close png device.\ndev.off()\n",
+    "created" : 1436614100232.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1933633518",
+    "id" : "58319F2B",
+    "lastKnownWriteTime" : 1436614108,
+    "path" : "~/ExData_Plotting1/plot4.R",
+    "project_path" : "plot4.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

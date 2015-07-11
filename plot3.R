@@ -1,11 +1,13 @@
 require(data.table)
 Sys.setlocale(category = "LC_ALL", locale = "C")
 # extract header by nrow=0.
-colheader<-fread("household_power_consumption.txt",sep=";",header=TRUE,nrows=0)
+download.file("https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip","household_power_consumption.zip",method="curl")
+command<-paste0('unzip -p ',getwd(),"/","household_power_consumption.zip")
+colheader<-fread(command,sep=";",header=TRUE,nrows=0)
 colheader<-colnames(colheader)
 
 # get data from 1/2/2007 to file end by fread function. 
-housetxt<-fread("household_power_consumption.txt",sep=";",header=FALSE,na.strings='?',skip="1/2/2007")
+housetxt<-fread(command,sep=";",header=FALSE,na.strings='?',skip="1/2/2007")
 names(housetxt)<-colheader
 
 # extract data from 1/2/2007 to 2/2/2007 for Date column 
